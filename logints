@@ -1,0 +1,35 @@
+import { Component, OnInit } from '@angular/core';
+import {AuthenticationService} from '../authentication.service';
+import {AppserviceService} from '../appservice.service';
+import {Router} from '@angular/router';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
+})
+export class LoginComponent implements OnInit {
+
+  constructor(private service: AuthenticationService, private appService: AppserviceService, private router: Router) { }
+
+  ngOnInit() {
+    if(this.service.checkLoggedIn()){
+      this.router.navigate(['home']);
+    }
+
+  }
+  logIn()
+  {
+    this.loginservice.authenticate(this.username, this.password).subscribe(data =>{
+      this.service.isUserLoggedIn(true);
+      this.router.navigate(['home']);
+    });
+
+  }
+
+  logOut()
+  {
+    this.service.isUserLoggedIn(false);
+  }
+
+}

@@ -1,0 +1,75 @@
+package com.casestudy.swabhi.controller;
+
+
+
+
+        import com.casestudy.swabhi.Exception.exceptionRepo;
+        import com.casestudy.swabhi.model.items;
+        import com.casestudy.swabhi.repository.itemsRepository;
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.http.ResponseEntity;
+        import org.springframework.web.bind.annotation.*;
+        import javax.validation.Valid;
+        import java.util.List;
+
+
+@RestController
+@RequestMapping("/item")
+@CrossOrigin( origins = "http://localhost:4200" , allowedHeaders = "*")
+public class NoteController {
+
+    @Autowired
+    itemsRepository noteRepository;
+
+    // Get All Notes
+    @GetMapping("/productdetails")
+    public List<items> getAllNotes() {
+        return noteRepository.findAll();
+    }
+
+    // Create a new Note
+    @PostMapping("/details")
+    public items createNote(@Valid @RequestBody items note) {
+        return noteRepository.save(note);
+    }
+
+    // Get a Single Note
+    @GetMapping("/items/{id}")
+    public items getDetailsById(@PathVariable(value = "id") Long productId) {
+        return noteRepository.findById(productId)
+                .orElseThrow(() -> new exceptionRepo("Note", "id", productId));
+    }
+
+    // Update a Note
+
+
+
+    // Delete a Note
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteNote(@PathVariable(value = "id") Long noteId) {
+        items note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new exceptionRepo("Note", "id", noteId));
+
+        noteRepository.delete(note);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/cat/{cat}")
+    public List<items> getDetailsByCat(@PathVariable(value="cat")String category)
+    {
+        return noteRepository.findAllByCategory(category);
+    }
+
+
+   @GetMapping("/{cat}/{price1}/{price2}")
+    public List<items> getMultiDetails(@PathVariable(value = "cat")String category, @PathVariable(value = "price1")Long price1, @PathVariable(value = "price2")Long price2){
+        return noteRepository.findByCategoryAndPriceBetween(category, price1, price2);
+   }
+
+   @GetMapping("abc/{price1}/{price2}")
+   public List<items> getPriceDetails(@PathVariable(value = "price1")long price1,@PathVariable(value = "price2")long price2)
+   {
+       return noteRepository.findAllByPriceBetween(price1, price2);
+   }
+}
